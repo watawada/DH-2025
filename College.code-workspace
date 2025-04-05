@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "../../College"
+		},
+		{
+			"path": ".."
+		},
+		{
+			"path": "../../Resume"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "Projects",
+		"java.debug.settings.onBuildFailureProceed": true
+	}
+}
