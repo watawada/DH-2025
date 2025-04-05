@@ -5,6 +5,8 @@ import os
 from dotenv import load_dotenv
 from fastapi.responses import HTMLResponse, StreamingResponse
 from io import BytesIO
+from PDF_reader import generate_summary, extract_text_from_pdf
+import tempfile
 
 # Load environment variables from .env file
 load_dotenv()
@@ -32,12 +34,37 @@ def test_mongo():
 def read_root():
     return {"message": "Hello, World!"}
 
+# does the actual uploading of the pdf and name for the html
+@app.post("/upload-pdf/")
+async def upload_pdf(
+    name: str = Form(...),
+    folder: str = Form(...),
+    file: UploadFile = File(...)
+):
+    """
+    Upload a PDF file, assign it to a folder, and save it in the MongoDB collection.
+    """
+    try:
+        # Read the file content
+        file_content = await file.read()
 
+        # Save the PDF in the database
+        pdf_result = collection.insert_one({
+            "name": name,
+            "folder": folder,
+            "filename": file.filename,
+            "content": file_content
+        })
+
+        return {"message": "PDF uploaded successfully", "pdf_id": str(pdf_result.inserted_id)}
+    except Exception as e:
+        return {"error": str(e)}
+    
 #just html for upload, can delete later
 @app.get("/upload-form/", response_class=HTMLResponse)
 def upload_form():
     """
-    Serve an HTML form for uploading PDFs.
+    Serve an HTML form for uploading PDFs with a folder field.
     """
     return """
     <!DOCTYPE html>
@@ -50,6 +77,8 @@ def upload_form():
         <form action="/upload-pdf/" method="post" enctype="multipart/form-data">
             <label for="name">PDF Name:</label>
             <input type="text" id="name" name="name" required><br><br>
+            <label for="folder">Folder:</label>
+            <input type="text" id="folder" name="folder" required><br><br>
             <label for="file">Choose PDF:</label>
             <input type="file" id="file" name="file" accept="application/pdf" required><br><br>
             <button type="submit">Upload</button>
@@ -58,26 +87,143 @@ def upload_form():
     </html>
     """
 
-# does the actual uploading of the pdf and name for the html
-@app.post("/upload-pdf/")
-async def upload_pdf(name: str = Form(...), file: UploadFile = File(...)):
+#searching by folder html
+@app.get("/search-page/", response_class=HTMLResponse)
+def search_page(folder: str = None):
     """
-    Upload a PDF file and save it in the MongoDB collection with a name.
+    Serve a unified search page that displays all uploaded files and allows filtering by folder.
     """
     try:
-        # Read the file content
-        file_content = await file.read()
+        # Query the database
+        query = {"folder": folder} if folder else {}
+        pdfs = collection.find(query, {"_id": 1, "name": 1, "filename": 1, "folder": 1})
+        results = [{"id": str(pdf["_id"]), "name": pdf["name"], "filename": pdf["filename"], "folder": pdf["folder"]} for pdf in pdfs]
 
-        # Save the file in the database
-        result = collection.insert_one({
-            "name": name,
-            "filename": file.filename,
-            "content": file_content
-        })
+        # Generate table rows for the results
+        if results:
+            table_rows = "".join(
+                f"<tr><td>{pdf['name']}</td><td>{pdf['filename']}</td><td>{pdf['folder']}</td></tr>" for pdf in results
+            )
+        else:
+            table_rows = "<tr><td colspan='3'>No PDFs found</td></tr>"
 
-        return {"message": "PDF uploaded successfully", "id": str(result.inserted_id)}
+        # Generate the HTML page
+        return f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Search PDFs</title>
+        </head>
+        <body>
+            <h1>Search PDFs</h1>
+            <form action="/search-page/" method="get">
+                <label for="folder">Filter by Folder:</label>
+                <input type="text" id="folder" name="folder" placeholder="Enter folder name">
+                <button type="submit">Search</button>
+            </form>
+            <br>
+            <h2>Uploaded PDFs</h2>
+            <table border="1">
+                <tr>
+                    <th>Name</th>
+                    <th>Filename</th>
+                    <th>Folder</th>
+                </tr>
+                {table_rows}
+            </table>
+        </body>
+        </html>
+        """
     except Exception as e:
-        return {"error": str(e)}
+        return f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Error</title>
+        </head>
+        <body>
+            <h1>Error: {str(e)}</h1>
+        </body>
+        </html>
+        """
+    
+#summarizing pdf html
+@app.get("/summarize-form/", response_class=HTMLResponse)
+def summarize_form():
+    """
+    Serve an HTML form with a dropdown menu to select a PDF for summarization.
+    """
+    try:
+        # Fetch all PDFs from the database
+        pdfs = collection.find({}, {"_id": 1, "name": 1})  # Only fetch `_id` and `name`
+        options = ""
+        for pdf in pdfs:
+            options += f'<option value="{str(pdf["_id"])}">{pdf["name"]}</option>'
+
+        return f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Summarize PDF</title>
+        </head>
+        <body>
+            <h1>Select a PDF to Summarize</h1>
+            <form action="/generate-summary/" method="post">
+                <label for="pdf_id">Choose a PDF:</label>
+                <select id="pdf_id" name="pdf_id" required>
+                    {options}
+                </select>
+                <br><br>
+                <button type="submit">Generate Summary</button>
+            </form>
+        </body>
+        </html>
+        """
+    except Exception as e:
+        return f"<h1>Error: {str(e)}</h1>"
+    
+#summarizing pdf functionality
+@app.post("/generate-summary/", response_class=HTMLResponse)
+async def generate_summary_route(pdf_id: str = Form(...)):
+    """
+    Generate a summary for the selected PDF and display it on a new page.
+    """
+    try:
+        # Fetch the PDF from the database
+        pdf = collection.find_one({"_id": ObjectId(pdf_id)})
+        if not pdf:
+            return f"<h1>Error: PDF not found</h1>"
+
+        # Extract text from the PDF content
+        pdf_content = BytesIO(pdf["content"])
+        text = extract_text_from_pdf(pdf_content)
+
+        if not text:
+            return f"<h1>Error: No text could be extracted from the PDF</h1>"
+
+        # Generate the summary using Gemini AI
+        summary = generate_summary(text)
+
+        if not summary:
+            return f"<h1>Error: Failed to generate summary</h1>"
+
+        # Display the summary on a new page
+        return f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>PDF Summary</title>
+        </head>
+        <body>
+            <h1>Summary for PDF: {pdf['name']}</h1>
+            <p>{summary}</p>
+            <br>
+            <a href="/summarize-form/">Summarize Another PDF</a>
+        </body>
+        </html>
+        """
+    except Exception as e:
+        return f"<h1>Error: {str(e)}</h1>"
 
 #html for pdf downloading
 @app.get("/download-form/", response_class=HTMLResponse)

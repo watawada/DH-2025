@@ -1,7 +1,7 @@
 import PyPDF2
 import google.generativeai as genai
 from dotenv import load_dotenv
-
+from PyPDF2 import PdfReader
 import os
 
 # Set up API key (replace with your actual API key)
@@ -9,14 +9,25 @@ load_dotenv()
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 genai.configure(api_key=GEMINI_API_KEY)
 
-def extract_text_from_pdf(pdf_path):
-    """Extracts text from a PDF file."""
-    text = ""
-    with open(pdf_path, 'rb') as file:
-        reader = PyPDF2.PdfReader(file)
+def extract_text_from_pdf(pdf_file):
+    """
+    Extract text from a PDF file. Accepts either a file path or a BytesIO object.
+    """
+    try:
+        if isinstance(pdf_file, (str, bytes, os.PathLike)):
+            # If it's a file path, open the file
+            with open(pdf_file, "rb") as f:
+                reader = PdfReader(f)
+        else:
+            # If it's a BytesIO object, use it directly
+            reader = PdfReader(pdf_file)
+
+        text = ""
         for page in reader.pages:
             text += page.extract_text()
-    return text
+        return text
+    except Exception as e:
+        return ""
 
 def generate_summary(text):
     """Generates summary using Gemini Flash 1.5 model."""
