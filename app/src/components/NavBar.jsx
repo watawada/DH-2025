@@ -1,12 +1,14 @@
 import logo from "../assets/logo.svg";
 import Dropdown from "./Dropdown";
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 function NavBar() {
   return (
     <nav className="navbar navbar-expand-lg bg-dark navbar-dark">
       <div className="container-fluid">
-        <Dropdown />
+        
         <a className="navbar-brand d-flex align-items-center" href="#">
+          <Dropdown/>
           <img
             src={logo}
             alt="Brand Logo"

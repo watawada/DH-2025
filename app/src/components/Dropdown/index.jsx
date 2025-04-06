@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import './index.css';
+// import Dashboard from '../../Dashboard.jsx';
+// import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom';
 
 
 const Dropdown = () => {
@@ -20,10 +22,11 @@ const Dropdown = () => {
           &times;
         </button>
         <ul>
-          <li><a href="#home">Home</a></li>
-          <li><a href="#about">About</a></li>
-          <li><a href="#services">Services</a></li>
-          <li><a href="#contact">Contact</a></li>
+          <li><a href="/#home">Home</a></li>
+          <li><a href="/#about">About</a></li>
+          {/* <li><Link to="/Dashboard.jsx">dashboard</Link></li> */}
+          <li><a href="/#services">Services</a></li>
+          <li><a href="/#contact">Contact</a></li>
         </ul>
       </div>
     </div>

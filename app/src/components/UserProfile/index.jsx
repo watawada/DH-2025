@@ -1,6 +1,20 @@
 import React from 'react';
 import './UserProfile.css';
 
+const AccountSettingsButton = () => {
+    const handleButtonClick = () => {
+        // Logic to handle account settings button click
+        console.log('Account Settings clicked!');
+        // You can add navigation logic here if needed, e.g., using React Router
+    };
+
+    return (
+        <button className="account-settings-button" onClick={handleButtonClick}>
+            Account Settings
+        </button>
+    );
+};
+
 const UserProfile = ({ profilePicture, name, username }) => {
     return (
         <div className="user-profile-container">
@@ -8,7 +22,11 @@ const UserProfile = ({ profilePicture, name, username }) => {
             <div className="user-info">
                 <h2 className="name">{name}</h2>
                 <p className="username">@{username}</p>
+                <div className="account-settings-container">
+                    <AccountSettingsButton />
+                </div>
             </div>
+            
         </div>
     );
 };
