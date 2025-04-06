@@ -10,7 +10,6 @@ import AllPacks from "./components/AllPacks/index.jsx";
 
 
 function Dashboard() {
-  
 return (
     <>
       <NavBar />
@@ -22,6 +21,7 @@ return (
 
       <RecentPacks />
       <AllPacks />
+
     </>
 
 );

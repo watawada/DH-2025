@@ -39,7 +39,7 @@ function App() {
       <Section heading="About" cards={aboutCards} />
       <Section heading="Features" cards={featureCards} />
     </>
-  );
+  )
 }
 
-export default App;
+export default App

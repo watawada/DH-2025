@@ -5,6 +5,7 @@ function HeroSection() {
         <h1 className="display-4 fw-bold mb-4">Study Buddy</h1>
         <button className="btn btn-secondary mt-3">Start Learning</button>
       </div>
+
     </section>
   );
 }
