@@ -7,14 +7,10 @@ import UserProfile from "./components/UserProfile/index.jsx";
 
 
 function Dashboard() {
-  
-
-  
 return (
     <>
       <NavBar/>
       <UserProfile name="John Doe" username="jdoe123"/>
-
     </>
 );
 }
