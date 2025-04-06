@@ -24,8 +24,3 @@
     flex: 1 1 calc(33.333% - 20px); /* 3 cards per row with spacing */
     box-sizing: border-box;
 }
-
-.card h3, p{
-    padding-left: 20px;
-    padding-top: 10px;
-}
