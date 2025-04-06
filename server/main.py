@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-from fastapi import FastAPI
-
-app = FastAPI()
-
-=======
 # FastAPI application for uploading, viewing, and managing PDF files with MongoDB
 # upload with route upload-pdf/
 # view with route view-pdf/ 
@@ -43,17 +37,10 @@ def test_mongo():
         return {"status": "error", "message": str(e)}
 
 # Base route for testing
->>>>>>> PDFread
 @app.get("/")
 def read_root():
     return {"message": "Hello, World!"}
 
-<<<<<<< HEAD
-if __name__ == '__main__':
-    import uvicorn
-    uvicorn.run(app, host = "127.0.0.1", port = 8000)
-
-=======
 # Upload PDF route
 @app.post("/upload-pdf/")
 async def upload_pdf(
@@ -485,4 +472,3 @@ async def view_pdf(pdf_id: str):
 if __name__ == '__main__':
     import uvicorn
     uvicorn.run(app, host="127.0.0.1", port=8000)
->>>>>>> PDFread
