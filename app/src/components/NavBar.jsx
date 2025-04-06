@@ -1,6 +1,6 @@
 import logo from "../assets/logo.svg";
 import Dropdown from "./Dropdown";
-// import "bootstrap-icons/font/bootstrap-icons.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 function NavBar() {
   return (
