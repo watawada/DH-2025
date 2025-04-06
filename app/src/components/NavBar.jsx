@@ -6,8 +6,7 @@ function NavBar() {
   return (
     <nav className="navbar navbar-expand-lg bg-dark navbar-dark">
       <div className="container-fluid">
-        
-        <a className="navbar-brand d-flex align-items-center" href="#">
+        <div className="navbar-brand d-flex align-items-center">
           <Dropdown/>
           <img
             src={logo}
@@ -17,7 +16,7 @@ function NavBar() {
             className="me-2" // Increased margin class
           />
           <span>Brand Name</span>
-        </a>
+        </div>
         <button
           className="navbar-toggler"
           type="button"
