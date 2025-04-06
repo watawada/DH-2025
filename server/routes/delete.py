@@ -42,7 +42,7 @@ def delete_form(db: Database = Depends(get_db)):
 async def delete_pdf(
     pdf_id: str = Form(...),
     db: Database = Depends(get_db),
-    request: Request = None  # Add the Request object here
+    request: Request = None  
 ):
     """
     Delete a PDF file from the MongoDB collection by ID and remove its ObjectId from the user's files array.
