@@ -11,22 +11,22 @@ from fastapi import Request
 
 router = APIRouter()
 
-@router.post("/generate-reviewquiz/", response_class=HTMLResponse)
+@router.post("/generate-reviewquiz/")
 async def generate_reviewquiz_route(pdf_id: str = Form(...), db: Database = Depends(get_db)):
     """
-    Generate a review quiz for the selected PDF and display it on a new page.
+    Generate a review quiz for the selected PDF and return it in the response.
     """
     try:
         collection = db["files"]
         pdf = collection.find_one({"_id": ObjectId(pdf_id)})
         if not pdf:
-            return "<h1>Error: PDF not found</h1>"
+            return {"error": "PDF not found"}
 
         pdf_content = BytesIO(pdf["content"])
         text = extract_text_from_pdf(pdf_content)
 
         if not text:
-            return "<h1>Error: No text could be extracted from the PDF</h1>"
+            return {"error": "No text could be extracted from the PDF"}
 
         # Generate quiz using Gemini
         prompt = (
@@ -35,54 +35,20 @@ async def generate_reviewquiz_route(pdf_id: str = Form(...), db: Database = Depe
             "Format the response as JSON, like this:\n\n"
             "[{\"question\": \"What is X?\", \"choices\": [\"A\", \"B\", \"C\", \"D\"], \"correct\": \"A\"}, ...]\n\n"
         )
-        quiz_json = generate_response(text,prompt)  # Reusing the generate_flashcards function for simplicity
+        quiz_json = generate_response(text, prompt)
 
         if not quiz_json:
-            return "<h1>Error: Failed to generate quiz</h1>"
+            return {"error": "Failed to generate quiz"}
 
         # Parse the quiz JSON
         quiz = parse_reviewquiz(quiz_json)
 
         if not quiz:
-            return "<h1>Error: No quiz generated</h1>"
+            return {"error": "No quiz generated"}
 
-        # Store the quiz in MongoDB
-        quizzes_collection = db["quizzes"]
-        quizzes_collection.insert_one({
-            "pdf_id": ObjectId(pdf_id),
-            "quiz": quiz
-        })
-
-        # Generate HTML for the quiz
-        quiz_html = "".join(
-            f"<div class='question'><p>{q['question']}</p>"
-            + "".join(f"<label><input type='radio' name='{i}' value='{choice}'> {choice}</label><br>"
-                      for choice in q['choices'])
-            + "</div><br>"
-            for i, q in enumerate(quiz)
-        )
-
-        return f"""
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Review Quiz</title>
-            <style>
-                .question {{ margin-bottom: 20px; }}
-                label {{ display: block; }}
-            </style>
-        </head>
-        <body>
-            <form action="/submit-quiz/" method="post">
-                <input type="hidden" name="pdf_id" value="{pdf_id}">
-                {quiz_html}
-                <button type="submit">Submit Quiz</button>
-            </form>
-        </body>
-        </html>
-        """
+        return {"quiz": quiz}  # Return the generated quiz directly
     except Exception as e:
-        return f"<h1>Error: {str(e)}</h1>"
+        return {"error": str(e)}
     
 @router.get("/reviewquiz-form/", response_class=HTMLResponse)
 async def reviewquiz_form_route(db: Database = Depends(get_db)):

@@ -1,42 +1,45 @@
-import logo from "../assets/logo.svg";
-import Dropdown from "./Dropdown";
-import "bootstrap-icons/font/bootstrap-icons.css";
+import React from "react";
+import { Link } from "react-router-dom";
 
 function NavBar() {
+  const handleLogin = () => {
+    window.location.href = "http://localhost:8000/auth/login"; // Redirect to backend login
+  };
+
+  const handleSignup = () => {
+    window.location.href = "http://localhost:8000/auth/login"; // Redirect to backend signup (same as login for now)
+  };
+
   return (
-    <nav className="navbar navbar-expand-lg bg-dark navbar-dark">
+    <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <div className="container-fluid">
-        <div className="navbar-brand d-flex align-items-center">
-          <Dropdown/>
-          <img
-            src={logo}
-            alt="Brand Logo"
-            width="30"
-            height="30"
-            className="me-2" // Increased margin class
-          />
-          <span>Brand Name</span>
-        </div>
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
-        <div className="collapse navbar-collapse" id="navbarSupportedContent">
+        <Link className="navbar-brand" to="/">
+          Home
+        </Link>
+        <div className="collapse navbar-collapse">
+          <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+            <li className="nav-item">
+              <Link className="nav-link" to="/dashboard">
+                Dashboard
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/upload">
+                Upload PDF
+              </Link>
+            </li>
+          </ul>
           <div className="ms-auto">
             <button
-              className="btn btn-outline-light me-2 login-btn"
-              type="button"
+              className="btn btn-outline-primary me-2"
+              onClick={handleLogin}
             >
               Login
             </button>
-            <button className="btn btn-light signup-btn" type="button">
+            <button
+              className="btn btn-primary"
+              onClick={handleSignup}
+            >
               Signup
             </button>
           </div>

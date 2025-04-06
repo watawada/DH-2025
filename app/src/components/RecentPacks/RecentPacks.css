@@ -12,15 +12,36 @@
     padding: 20px;
 }
 
+.recent-packs-container {
+    width: 80%;
+    margin: 0 auto;
+    margin-top: 20px;
+    background-color: #e6e6e6;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
 .card-container {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 20px;
-    width: 100%;
+    display: flex; /* Use flexbox for layout */
+    flex-wrap: wrap; /* Allow wrapping to the next row */
+    justify-content: flex-start; /* Left-align the boxes */
+    gap: 20px; /* Add spacing between the boxes */
 }
 
 .card-container .card {
-    flex: 1 1 calc(33.333% - 20px); /* 3 cards per row with spacing */
+    flex: 0 0 calc(33.333% - 20px); /* Fixed width for 3 cards per row */
     box-sizing: border-box;
+    cursor: pointer; /* Make the card look clickable */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    padding: 20px;
+    background-color: #fff; /* Optional: Add a background color */
+    border: 1px solid #ddd; /* Optional: Add a border */
+    border-radius: 8px; /* Optional: Add rounded corners */
+    text-align: center; /* Center-align text inside the card */
+}
+
+.card-container .card:hover {
+    transform: translateY(-5px); /* Lift the card slightly */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Add a shadow */
 }
