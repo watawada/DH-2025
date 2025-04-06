@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request  # Added Request import
 from pymongo.database import Database
 from bson.objectid import ObjectId
 from fastapi.responses import HTMLResponse, StreamingResponse
@@ -8,13 +8,31 @@ from database import get_db
 router = APIRouter()
 
 @router.get("/download-form/", response_class=HTMLResponse)
-def download_form(db: Database = Depends(get_db)):
+def download_form(db: Database = Depends(get_db), request: Request = None):
     """
     Serve an HTML form with a dropdown menu to select a PDF for download.
+    Only display PDFs that belong to the current user.
     """
+    if not request.session:
+        return {"error": "Not authenticated"}
+
     try:
+        # Get the current user's email from the session
+        user_email = request.session.get("user_email")
+        if not user_email:
+            return {"error": "User email not found in session"}
+
+        # Fetch the user's document to get their files array
+        user_collection = db["users"]
+        user = user_collection.find_one({"email": user_email})
+        if not user or "files" not in user:
+            return {"error": "No files found for the user"}
+
+        # Fetch only the PDFs whose ObjectIds are in the user's files array
         collection = db["files"]
-        pdfs = collection.find({}, {"_id": 1, "name": 1})
+        pdfs = collection.find({"_id": {"$in": user["files"]}}, {"_id": 1, "name": 1})
+
+        # Generate the dropdown options
         options = "".join(f'<option value="{str(pdf["_id"])}">{pdf["name"]}</option>' for pdf in pdfs)
 
         return f"""

@@ -6,6 +6,8 @@ from starlette.responses import RedirectResponse, JSONResponse
 from authlib.integrations.base_client import OAuthError
 from os import environ as env
 from auth import DOMAIN, CLIENT_ID, CLIENT_SECRET
+from database import get_db
+from pymongo.errors import DuplicateKeyError  # Import for handling unique constraints
 
 
 REDIRECT_URI = "http://localhost:8000/auth/callback"
@@ -18,7 +20,7 @@ async def home():
 
 @router.get("/login")
 async def login(request: Request):
-
+    
     # DEBUG: Log the redirect URI
     print(f"Redirecting to Auth0 with redirect_uri: {REDIRECT_URI}")
 
@@ -28,7 +30,7 @@ async def login(request: Request):
 
 
 @router.get("/callback")
-async def callback(request: Request):
+async def callback(request: Request, db=Depends(get_db)):
     try:
         # Log the incoming request
         print(f"Callback request: {request.query_params}")
@@ -37,10 +39,36 @@ async def callback(request: Request):
         token = await oauth.auth0.authorize_access_token(request)
         print(f"Token received: {token}")  # DEBUG: Log the token
         
+        # Extract user information from the token
+        user_info = token.get("userinfo")
+        if not user_info:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="User information not found in token."
+            )
+        
+        # Check if the user exists in the database
+        user_collection = db["users"]
+        user = user_collection.find_one({"email": user_info["email"]})
+        
+        if not user:
+            # Create a new user if they don't exist
+            new_user = {
+                "sub": user_info["sub"],  # Unique identifier from Auth0
+                "email": user_info.get("email"),
+                "picture": user_info.get("picture"),
+                "files": []
+            }
+            try:
+                user_collection.insert_one(new_user)
+                print(f"New user created: {new_user}")  # DEBUG: Log new user creation
+            except DuplicateKeyError:
+                print("Duplicate user detected during creation.")  # DEBUG: Handle race conditions
+        
         # Store tokens in session for potential future use
         request.session["access_token"] = token["access_token"]
         request.session["id_token"] = token["id_token"]
-        
+        request.session["user_email"] = user_info["email"]
         # Redirect to a protected route or homepage
         return RedirectResponse(url="/")
     except Exception as e:
@@ -87,4 +115,4 @@ async def protected(request: Request):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Authentication failed."
         )
-        
+

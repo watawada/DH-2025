@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Form, Depends
+from fastapi import APIRouter, Form, Depends, Request
 from pymongo.database import Database
 from bson.objectid import ObjectId
 from fastapi.responses import HTMLResponse
@@ -39,15 +39,33 @@ def delete_form(db: Database = Depends(get_db)):
         return f"<h1>Error: {str(e)}</h1>"
 
 @router.post("/delete-pdf/")
-async def delete_pdf(pdf_id: str = Form(...), db: Database = Depends(get_db)):
+async def delete_pdf(
+    pdf_id: str = Form(...),
+    db: Database = Depends(get_db),
+    request: Request = None  # Add the Request object here
+):
     """
-    Delete a PDF file from the MongoDB collection by ID.
+    Delete a PDF file from the MongoDB collection by ID and remove its ObjectId from the user's files array.
     """
     try:
+        # Delete the PDF from the "files" collection
         collection = db["files"]
         result = collection.delete_one({"_id": ObjectId(pdf_id)})
+
         if result.deleted_count == 0:
             return {"error": "PDF not found or could not be deleted"}
+
+        # Get the current user's email from the session
+        user_email = request.session.get("user_email")
+        if not user_email:
+            return {"error": "User email not found in session"}
+
+        # Remove the PDF's ObjectId from the user's "files" array
+        user_collection = db["users"]
+        user_collection.update_one(
+            {"email": user_email},  # Find the user by email
+            {"$pull": {"files": ObjectId(pdf_id)}}  # Remove the PDF's ObjectId from the "files" array
+        )
 
         return f"""
         <!DOCTYPE html>

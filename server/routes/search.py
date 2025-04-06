@@ -10,30 +10,34 @@ def search_page(db: Database = Depends(get_db), request: Request = None):
     """
     Serve a search page that displays all PDFs with the option to filter by folder or filename.
     """
+    if not request.session:
+        return {"error": "Cannot access search. Not authenticated"}
+
     try:
-        search_type = request.query_params.get("search_type", "folder")  # Default to folder search
-        search_term = request.query_params.get("search_term", "")  # Get the search term
-        
-        collection = db["files"]
-        query = {}
-        
-        if search_term:
-            if search_type == "folder":
-                query["folder"] = {"$regex": search_term, "$options": "i"}  # Case-insensitive search
-            else:  # filename search
-                query["filename"] = {"$regex": search_term, "$options": "i"}
-                
-        pdfs = collection.find(query, {"_id": 1, "name": 1, "filename": 1, "folder": 1})
-        results = [{"id": str(pdf["_id"]), "name": pdf["name"], "filename": pdf["filename"], "folder": pdf["folder"]} for pdf in pdfs]
-        
+        # Get the current user's email and fetch their document
+        user = db["users"].find_one({"email": request.session["user_email"]})
+        if not user or "files" not in user:
+            return {"error": "No files found for the user"}
+
+        # Get the search term
+        search_term = request.query_params.get("search_term", "").lower()
+
+        # Fetch all files belonging to the user
+        file_ids = user["files"]
+        files = db["files"].find({"_id": {"$in": file_ids}})
+
+        # Filter files based on the search term
+        results = [
+            file for file in files
+            if not search_term or search_term in file.get("filename", "").lower()
+        ]
+
+        # Generate table rows for the results
         table_rows = "".join(
-            f"<tr><td>{pdf['name']}</td><td>{pdf['filename']}</td><td>{pdf['folder']}</td></tr>" for pdf in results
-        ) if results else "<tr><td colspan='3'>No PDFs found</td></tr>"
-        
-        # Determine which option should be selected in the dropdown
-        folder_selected = "selected" if search_type == "folder" else ""
-        filename_selected = "selected" if search_type == "filename" else ""
-        
+            f"<tr><td>{file.get('name', '')}</td><td>{file.get('filename', '')}</td></tr>"
+            for file in results
+        ) if results else "<tr><td colspan='2'>No PDFs found</td></tr>"
+
         return f"""
         <!DOCTYPE html>
         <html>
@@ -43,15 +47,8 @@ def search_page(db: Database = Depends(get_db), request: Request = None):
         <body>
             <h1>Search PDFs</h1>
             <form action="/search-page/" method="get">
-                <label for="search_type">Search by:</label>
-                <select id="search_type" name="search_type">
-                    <option value="folder" {folder_selected}>Folder</option>
-                    <option value="filename" {filename_selected}>Filename</option>
-                </select>
-                
                 <label for="search_term">Search term:</label>
                 <input type="text" id="search_term" name="search_term" value="{search_term}" placeholder="Enter search term">
-                
                 <button type="submit">Search</button>
             </form>
             <br>
@@ -60,7 +57,6 @@ def search_page(db: Database = Depends(get_db), request: Request = None):
                 <tr>
                     <th>Name</th>
                     <th>Filename</th>
-                    <th>Folder</th>
                 </tr>
                 {table_rows}
             </table>
@@ -69,6 +65,3 @@ def search_page(db: Database = Depends(get_db), request: Request = None):
         """
     except Exception as e:
         return f"<h1>Error: {str(e)}</h1>"
-    
-    
-
