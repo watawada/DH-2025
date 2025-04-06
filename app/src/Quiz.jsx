@@ -50,7 +50,7 @@ function QuizPage() {
               </div>
             ))}
           </div>
-          <div className="text-center">
+          <div className="text-center mb-5">
             <button type="submit" className="btn btn-success mt-4">
               Submit Quiz
             </button>
