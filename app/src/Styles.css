@@ -22,3 +22,23 @@
     padding-top: 8rem !important;
     padding-bottom: 8rem !important;
 }
+
+.navbar {
+  position: relative; /* Ensure the navbar scrolls with the page */
+  z-index: 1030; /* Ensure it appears above other content */
+}
+
+.navbar-toggler {
+  position: relative; /* Ensure the hamburger icon is properly aligned */
+  z-index: 1; /* Prevent it from overlapping other elements */
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center; /* Align the logo and text vertically */
+}
+
+.navbar-toggler-icon {
+  width: 1.5em;
+  height: 1.5em; /* Adjust size if needed */
+}
