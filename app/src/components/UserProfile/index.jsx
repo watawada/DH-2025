@@ -6,7 +6,7 @@ const UserProfile = ({ profilePicture, name, username }) => {
         <div className="user-profile-container">
             <img src={profilePicture} alt={`${name}'s profile`} className="profile-image" />
             <div className="user-info">
-                <h2 className="display-name">{name}</h2>
+                <h2 className="name">{name}</h2>
                 <p className="username">@{username}</p>
             </div>
         </div>

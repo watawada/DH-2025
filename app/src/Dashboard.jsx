@@ -10,13 +10,13 @@ function Dashboard() {
   
 
   
-  return (
+return (
     <>
       <NavBar/>
-      <UserProfile/>
+      <UserProfile name="John Doe" username="jdoe123"/>
 
     </>
-  );
+);
 }
 
 export default Dashboard
