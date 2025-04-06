@@ -1,0 +1,26 @@
+:root {
+    --spacer: 2rem;
+}
+
+.login-btn {
+  background-color: #4ca7af; /* Green */
+  color: white;
+  border: none;
+}
+
+.signup-btn {
+  background-color: #f44336; /* Red */
+  color: white;
+  border: none;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+.hero-padding {
+    padding-left: calc(var(--spacer, 1rem) * 0.5) !important;
+    padding-right: calc(var(--spacer, 1rem) * 0.5) !important;
+}
