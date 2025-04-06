@@ -3,6 +3,7 @@ import google.generativeai as genai
 from dotenv import load_dotenv
 from PyPDF2 import PdfReader
 import os
+import json
 
 # Set up API key (replace with your actual API key)
 load_dotenv()
@@ -29,23 +30,45 @@ def extract_text_from_pdf(pdf_file):
     except Exception as e:
         return ""
 
-def generate_summary(text):
-    """Generates summary using Gemini Flash 1.5 model."""
+def generate_flashcards(text):
+    """Generates flashcards using Gemini Flash 1.5 model."""
     model = genai.GenerativeModel('gemini-1.5-flash-latest')
-    prompt = f"Please provide a concise summary of the following text:\n\n{text}"
+    prompt = (
+        "Create a list of flashcards based on the following text. "
+        "Each flashcard should have a keyword, phrase, or question on one side, "
+        "and a definition or answer on the other side. Format the response as JSON, "
+        "with each flashcard being an object in a list, like this:\n\n"
+        "[{\"front\": \"What is X?\", \"back\": \"X is ...\"}, {\"front\": \"Keyword\", \"back\": \"Definition\"}]\n\n"
+        f"Text:\n{text}"
+    )
     
     try:
         response = model.generate_content(prompt)
-        return response.text
+        return response.text  # The response should be a JSON string
     except Exception as e:
-        print(f"Error generating summary: {e}")
+        print(f"Error generating flashcards: {e}")
         return None
+
+def parse_flashcards(response_text):
+    """Parses the JSON response from the AI into a list of flashcards."""
+    try:
+        flashcards = json.loads(response_text)
+        return flashcards  # A list of dictionaries with "front" and "back" keys
+    except json.JSONDecodeError as e:
+        print(f"Error parsing flashcards: {e}")
+        return []
 
 def save_summary_to_file(summary, output_file="summary.txt"):
     """Saves summary to a text file."""
     with open(output_file, 'w', encoding='utf-8') as file:
         file.write(summary)
     print(f"Summary saved to {output_file}")
+
+def save_flashcards_to_file(flashcards, output_file="flashcards.json"):
+    """Saves flashcards to a JSON file."""
+    with open(output_file, 'w', encoding='utf-8') as file:
+        json.dump(flashcards, file, indent=4)
+    print(f"Flashcards saved to {output_file}")
 
 def main():
     # Get PDF path from user
@@ -61,11 +84,17 @@ def main():
         print("Error: No text extracted from PDF")
         return
     
-    # Generate summary
-    summary = generate_summary(text)
-    if summary:
-        # Save summary
-        save_summary_to_file(summary)
+    # Generate flashcards
+    flashcards_json = generate_flashcards(text)
+    if flashcards_json:
+        flashcards = parse_flashcards(flashcards_json)
+        if flashcards:
+            # Save flashcards to a file
+            save_flashcards_to_file(flashcards)
+        else:
+            print("Error: No flashcards generated")
+    else:
+        print("Error: Failed to generate flashcards")
 
 if __name__ == "__main__":
     main()
