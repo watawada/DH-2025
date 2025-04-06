@@ -7,6 +7,7 @@ from routes.download import router as download_router
 from routes.delete import router as delete_router
 from routes.view import router as view_router
 from routes.reviewquiz import router as reviewquiz_router
+from routes.userRoute import router as user_router
 import logging
 from fastapi.middleware.cors import CORSMiddleware
 from routes.authRoutes import router
@@ -23,6 +24,7 @@ app.include_router(download_router)
 app.include_router(delete_router)
 app.include_router(view_router)
 app.include_router(reviewquiz_router)
+app.include_router(user_router, prefix="/user", tags=["user"])
 
 
 # Add CORS middleware

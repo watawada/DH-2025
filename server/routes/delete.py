@@ -56,6 +56,11 @@ async def delete_pdf(
             return {"error": "PDF not found or could not be deleted"}
 
         # Get the current user's email from the session
+
+        
+        print(request.session)  # DEBUG: Log the session data
+
+
         user_email = request.session.get("user_email")
         if not user_email:
             return {"error": "User email not found in session"}

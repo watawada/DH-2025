@@ -1,10 +1,10 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import QuizPage from "./Quiz.jsx";
+import FlashcardPage from "./Flashcard.jsx";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <QuizPage />
+    <FlashcardPage />
   </StrictMode>
 );

@@ -16,19 +16,19 @@ const AccountSettingsButton = () => {
 };
 
 const UserProfile = ({ profilePicture, name, username }) => {
+    console.log("UserProfile props:", { profilePicture, name, username }); // Debug: Log the props
     return (
-        <div className="user-profile-container">
-            <img src={profilePicture} alt={`${name}'s profile`} className="profile-image" />
-            <div className="user-info">
-                <h2 className="name">{name}</h2>
-                <p className="username">@{username}</p>
-                <div className="account-settings-container">
-                    <AccountSettingsButton />
-                </div>
-            </div>
-            
+      <div className="user-profile-container">
+        <img src={profilePicture} alt={`${name}'s profile`} className="profile-image" />
+        <div className="user-info">
+          <h2 className="name">{name}</h2>
+          <p className="username">{username}</p>
+          <div className="account-settings-container">
+            <AccountSettingsButton />
+          </div>
         </div>
+      </div>
     );
-};
+  };
 
 export default UserProfile;
