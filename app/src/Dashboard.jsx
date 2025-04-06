@@ -5,11 +5,11 @@ import NavBar from "./components/NavBar.jsx";
 import Section from "./components/Section";
 import UserProfile from "./components/UserProfile/index.jsx";
 import profileImage from "./assets/ryan.jpg";
+import RecentPacks from "./components/RecentPacks/index.jsx";
+import AllPacks from "./components/AllPacks/index.jsx";
 
 
 function Dashboard() {
-  
-
   
 return (
     <>
@@ -19,7 +19,11 @@ return (
         username="jdoe123" 
         profilePicture={profileImage}
       />
+
+      <RecentPacks />
+      <AllPacks />
     </>
+
 );
 }
 
