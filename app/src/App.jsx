@@ -1,6 +1,8 @@
-import logo from "./assets/logo.svg";
+import logo from "../public/assets/logo.svg";
 import "./Styles.css";
+import Dropdown from "./components/Dropdown";
 import 'bootstrap-icons/font/bootstrap-icons.css';
+
 
 
 function App() {
@@ -19,6 +21,7 @@ function App() {
             />
             <span>Brand Name</span>
           </a>
+          <Dropdown />
           <button
             className="navbar-toggler"
             type="button"
