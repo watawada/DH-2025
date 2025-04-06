@@ -1,45 +1,22 @@
-import "./Styles.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
-import React from "react";
-import NavBar from "./components/NavBar.jsx";
-import HeroSection from "./components/Hero.jsx";
-import Section from "./components/Section";
+import React from 'react';
+import Dropdown from './components/Dropdown/index.jsx';  // Import the Navbar
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Home from './Home.jsx';      // Import the Home page
+import Dashboard from './Dashboard.jsx';    // Import the About page
 
-function App() {
-  const aboutCards = [
-    {
-      title: "Powerful AI",
-      description: "Leverage AI to enhance your learning.",
-    },
-    {
-      title: "Easy to Use",
-      description: "Upload files and get study materials instantly.",
-    },
-  ];
-
-  const featureCards = [
-    {
-      title: "Flashcards",
-      icon: <i className="bi bi-card-text"></i>,
-      description: "Create flashcards easily.",
-    },
-    {
-      title: "Quizzes",
-      icon: <i className="bi bi-lightbulb"></i>,
-      description: "Generate quizzes for practice.",
-    },
-  ];
+const App = () => {
   return (
-    <>
-      <NavBar/>
+    <Router>
+      <div>
+        <main>
+          <Routes>
+            <Route path="/" element={<Home />} /> {/* Home route */}
+            <Route path="/dashboard" element={<Dashboard />} /> {/* Dashboard route */}
+          </Routes>
+        </main>
+      </div>
+    </Router>
+  );
+};
 
-      <HeroSection />
-
-      {/* About Section */}
-      <Section heading="About" cards={aboutCards} />
-      <Section heading="Features" cards={featureCards} />
-    </>
-  )
-}
-
-export default App
+export default App;
