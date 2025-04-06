@@ -1,13 +1,10 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import App from './App.jsx'
-import Flashcard from './Flashcard.jsx'
-import 'bootstrap/dist/css/bootstrap.min.css'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import QuizPage from "./Quiz.jsx";
+import "bootstrap/dist/css/bootstrap.min.css";
 
-
-createRoot(document.getElementById('root')).render(
+createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <Flashcard />
-  </StrictMode>,
-)
-
+    <QuizPage />
+  </StrictMode>
+);
