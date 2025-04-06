@@ -21,7 +21,7 @@ oauth.register(
     client_id=CLIENT_ID,
     client_secret=CLIENT_SECRET,
     server_metadata_url=f"https://{DOMAIN}/.well-known/openid-configuration",
-    client_kwargs={"scope": "openid profile email", "response_type": "code", "token_endpoint_auth_method": "client_secret_post"},
+    client_kwargs={"scope": "openid profile email"},
 )
 
 security = HTTPBearer()
