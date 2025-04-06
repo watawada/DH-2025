@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./Flashcard.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-function Flashcard({ term, definition }) {
+function Flashcard({ term = "No term provided", definition = "No definition provided" }) {
   const [flipped, setFlipped] = useState(false);
 
   const handleFlip = () => {

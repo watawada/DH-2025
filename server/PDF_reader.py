@@ -40,11 +40,11 @@ def generate_response(text, prompt):
         return None
 
 def parse_flashcards(response_text):
-    """Parses the JSON response from the AI into a dictionary of flashcards."""
+    """Parses the JSON response from the AI into a list of flashcards."""
     try:
         if not response_text:
             print("Error: Empty response text")
-            return {}
+            return []
 
         print(f"Raw response text before cleaning: {repr(response_text)}")  # Debug: Log the raw response
 
@@ -60,20 +60,20 @@ def parse_flashcards(response_text):
         # Parse the JSON response
         flashcards_list = json.loads(cleaned_response)
 
-        # Convert the list of flashcards into a dictionary
-        flashcards_dict = {card["front"]: card["back"] for card in flashcards_list}
+        # Ensure the response is a list of objects with "front" and "back" keys
+        validated_flashcards = [{"front": card["front"], "back": card["back"]} for card in flashcards_list]
 
-        # Debug: Log the parsed flashcards dictionary
-        print(f"Parsed flashcards dictionary: {flashcards_dict}")
+        # Debug: Log the parsed flashcards list
+        print(f"Parsed flashcards list: {validated_flashcards}")
 
-        return flashcards_dict
+        return validated_flashcards
     except json.JSONDecodeError as e:
         print(f"Error parsing flashcards: {e}")
         print(f"Raw response text: {repr(response_text)}")  # Debug: Log the raw response
-        return {}
+        return []
     except KeyError as e:
         print(f"Error: Missing expected keys in flashcards: {e}")
-        return {}
+        return []
     
 def parse_reviewquiz(response_text):
     """Parses the JSON response from the AI into a list of review quiz questions."""

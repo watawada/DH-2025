@@ -15,7 +15,7 @@ function StudyPack() {
     { term: "Term 3", definition: "Definition 3" },
     { term: "Term 4", definition: "Definition 4" },
   ];
-
+  
   return (
     <>
       <NavBar />
