@@ -1,53 +1,16 @@
-import logo from "./assets/logo.svg";
 import "./Styles.css";
-import 'bootstrap-icons/font/bootstrap-icons.css';
-
+import "bootstrap-icons/font/bootstrap-icons.css";
+import NavBar from "./components/NavBar.jsx";
+import HeroSection from "./components/Hero.jsx";
 
 function App() {
   return (
     <>
       {/* Navbar */}
-      <nav className="navbar navbar-expand-lg bg-dark navbar-dark">
-        <div className="container-fluid">
-          <a className="navbar-brand d-flex align-items-center" href="#">
-            <img
-              src={logo}
-              alt="Brand Logo"
-              width="30"
-              height="30"
-              className="me-2"
-            />
-            <span>Brand Name</span>
-          </a>
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span className="navbar-toggler-icon"></span>
-          </button>
-          <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <div className="ms-auto">
-              <button className="btn btn-outline-light me-2 login-btn" type="button">
-                Login
-              </button>
-              <button className="btn btn-light signup-btn" type="button">
-                Signup
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <NavBar/>
 
       {/* Hero Section */}
-      <section className="hero text-center hero-padding bg-light">
-        <h1 className="display-4">Study Buddy</h1>
-        <button className="btn btn-secondary mt-3">Start Learning</button>
-      </section>
+      <HeroSection/>
 
       {/* About Section */}
       <section className="about text-center py-5">
