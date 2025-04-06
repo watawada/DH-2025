@@ -1,9 +1,17 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import connection from "../backend"; // Axios instance
 
 function NavBar() {
-  const handleLogin = () => {
-    window.location.href = "http://localhost:8000/auth/login"; // Redirect to backend login
+  const navigate = useNavigate();
+
+  const handleLogin = async () => {
+    try {
+      // Redirect to the backend login route
+      window.location.href = "http://localhost:8000/auth/login";
+    } catch (err) {
+      console.error("Error during login:", err);
+    }
   };
 
   const handleSignup = () => {
@@ -13,20 +21,20 @@ function NavBar() {
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <div className="container-fluid">
-        <Link className="navbar-brand" to="/">
+        <a className="navbar-brand" href="/">
           Home
-        </Link>
+        </a>
         <div className="collapse navbar-collapse">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
             <li className="nav-item">
-              <Link className="nav-link" to="/dashboard">
+              <a className="nav-link" href="/dashboard">
                 Dashboard
-              </Link>
+              </a>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/upload">
+              <a className="nav-link" href="/upload">
                 Upload PDF
-              </Link>
+              </a>
             </li>
           </ul>
           <div className="ms-auto">

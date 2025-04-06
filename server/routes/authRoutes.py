@@ -69,8 +69,9 @@ async def callback(request: Request, db=Depends(get_db)):
         request.session["access_token"] = token["access_token"]
         request.session["id_token"] = token["id_token"]
         request.session["user_email"] = user_info["email"]
-        # Redirect to a protected route or homepage
-        return RedirectResponse(url="/")
+        
+        # Redirect to the frontend's "Upload PDF" page
+        return RedirectResponse(url="http://localhost:8001/upload")
     except Exception as e:
         # Log the error
         print(f"Error during callback: {str(e)}")
