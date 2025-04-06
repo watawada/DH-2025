@@ -24,6 +24,11 @@ function QuizPage() {
     },
   ];
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    alert("Quiz submitted!");
+  };
+
   return (
     <>
       <NavBar />
@@ -33,17 +38,24 @@ function QuizPage() {
             <h1 className="me-2">Quiz</h1>
           </div>
         </div>
-        <div className="row justify-content-center">
-          {questions.map((q, index) => (
-            <div key={index} className="col-12 col-md-8 mb-5">
-              <QuizForm
-                question={q.question}
-                options={q.options}
-                questionIndex={index}
-              />
-            </div>
-          ))}
-        </div>
+        <form onSubmit={handleSubmit}>
+          <div className="row justify-content-center">
+            {questions.map((q, index) => (
+              <div key={index} className="col-12 col-md-8 mb-5">
+                <QuizForm
+                  question={q.question}
+                  options={q.options}
+                  questionIndex={index}
+                />
+              </div>
+            ))}
+          </div>
+          <div className="text-center">
+            <button type="submit" className="btn btn-success mt-4">
+              Submit Quiz
+            </button>
+          </div>
+        </form>
       </div>
     </>
   );
