@@ -2,11 +2,15 @@ import "./Styles.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import NavBar from "./components/NavBar.jsx";
 import HeroSection from "./components/Hero.jsx";
+import Dropdown from "./components/Dropdown";
+
+
 
 function App() {
   return (
     <>
       {/* Navbar */}
+
       <NavBar/>
 
       {/* Hero Section */}
