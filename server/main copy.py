@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-from fastapi import FastAPI
-
-app = FastAPI()
-
-=======
-# FastAPI application for uploading, viewing, and managing PDF files with MongoDB
-# upload with route upload-pdf/
-# view with route view-pdf/ 
-# delete with route delete-pdf/
-# search with route search-page/
-# generate flashcards with route generate-flashcards/
-
 from fastapi import FastAPI, Form, File, UploadFile
 from pymongo import MongoClient
 from bson.objectid import ObjectId
@@ -32,7 +19,7 @@ client = MongoClient(MONGO_URI)
 db = client["PDF"]  # Replace 'mydatabase' with your database name
 collection = db["files"]  # Replace 'mycollection' with your collection name
 
-# Test MongoDB connection
+#test mongo connection
 @app.get("/test-mongo/")
 def test_mongo():
     try:
@@ -42,34 +29,34 @@ def test_mongo():
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
-# Base route for testing
->>>>>>> PDFread
+#base route for testing
 @app.get("/")
 def read_root():
     return {"message": "Hello, World!"}
 
-<<<<<<< HEAD
-if __name__ == '__main__':
-    import uvicorn
-    uvicorn.run(app, host = "127.0.0.1", port = 8000)
-
-=======
-# Upload PDF route
+# does the actual uploading of the pdf and name for the html
 @app.post("/upload-pdf/")
 async def upload_pdf(
     name: str = Form(...),
     folder: str = Form(...),
-    file: UploadFile = File(...)
+    file: UploadFile = File(...),
+    token: str = Depends(oauth2_scheme)
 ):
     """
-    Upload a PDF file and save it in the database.
+    Upload a PDF file and associate it with the authenticated user.
     """
     try:
+        # Extract user_id from the token
+        user_id = get_user_id_from_token(token)
+        if not user_id:
+            return {"error": "Invalid or missing token"}
+
         # Read the file content
         file_content = await file.read()
 
         # Save the PDF in the database
         pdf_result = collection.insert_one({
+            "user_id": user_id,  # Associate the PDF with the user
             "name": name,
             "folder": folder,
             "filename": file.filename,
@@ -79,8 +66,8 @@ async def upload_pdf(
         return {"message": "PDF uploaded successfully", "pdf_id": str(pdf_result.inserted_id)}
     except Exception as e:
         return {"error": str(e)}
-
-# HTML form for uploading PDFs
+    
+#just html for upload, can delete later
 @app.get("/upload-form/", response_class=HTMLResponse)
 def upload_form():
     """
@@ -107,15 +94,20 @@ def upload_form():
     </html>
     """
 
-# Search PDFs by folder
+#searching by folder html
 @app.get("/search-page/", response_class=HTMLResponse)
-def search_page(folder: str = None):
+def search_page(folder: str = None, token: str = Depends(oauth2_scheme)):
     """
-    Serve a search page that displays all PDFs or filters by folder.
+    Serve a search page that only displays PDFs belonging to the authenticated user.
     """
     try:
-        # Query the database for PDFs
-        query = {}
+        # Extract user_id from the token
+        user_id = get_user_id_from_token(token)
+        if not user_id:
+            return f"<h1>Error: Invalid or missing token</h1>"
+
+        # Query the database for PDFs belonging to the user
+        query = {"user_id": user_id}
         if folder:
             query["folder"] = folder
 
@@ -145,7 +137,7 @@ def search_page(folder: str = None):
                 <button type="submit">Search</button>
             </form>
             <br>
-            <h2>Uploaded PDFs</h2>
+            <h2>Your Uploaded PDFs</h2>
             <table border="1">
                 <tr>
                     <th>Name</th>
@@ -160,7 +152,7 @@ def search_page(folder: str = None):
     except Exception as e:
         return f"<h1>Error: {str(e)}</h1>"
 
-# Flashcard generation route
+#flashcard generation functionality
 @app.post("/generate-flashcards/", response_class=HTMLResponse)
 async def generate_flashcards_route(pdf_id: str = Form(...)):
     """
@@ -222,8 +214,8 @@ async def generate_flashcards_route(pdf_id: str = Form(...)):
         """
     except Exception as e:
         return f"<h1>Error: {str(e)}</h1>"
-
-# Flashcard generation HTML form
+    
+#flashcard generation html
 @app.get("/flashcard-form/", response_class=HTMLResponse)
 def flashcard_form():
     """
@@ -258,7 +250,7 @@ def flashcard_form():
     except Exception as e:
         return f"<h1>Error: {str(e)}</h1>"
 
-# View flashcards route
+#flashcard save functionality
 @app.get("/view-flashcards/", response_class=HTMLResponse)
 def view_flashcards(pdf_id: str):
     """
@@ -298,15 +290,20 @@ def view_flashcards(pdf_id: str):
     except Exception as e:
         return f"<h1>Error: {str(e)}</h1>"
 
-# HTML form for downloading PDFs
+#html for pdf downloading
 @app.get("/download-form/", response_class=HTMLResponse)
-def download_form():
+def download_form(token: str = Depends(oauth2_scheme)):
     """
     Serve an HTML form with a dropdown menu to select a PDF for download.
     """
     try:
-        # Fetch all PDFs from the database
-        pdfs = collection.find({}, {"_id": 1, "name": 1})  # Only fetch `_id` and `name`
+        # Extract user_id from the token
+        user_id = get_user_id_from_token(token)
+        if not user_id:
+            return f"<h1>Error: Invalid or missing token</h1>"
+
+        # Fetch PDFs belonging to the authenticated user
+        pdfs = collection.find({"user_id": user_id}, {"_id": 1, "name": 1})  # Only fetch `_id` and `name`
         options = ""
         for pdf in pdfs:
             options += f'<option value="{str(pdf["_id"])}">{pdf["name"]}</option>'
@@ -333,17 +330,22 @@ def download_form():
     except Exception as e:
         return f"<h1>Error: {str(e)}</h1>"
 
-# Download PDF route
+#downloads pdf functionality
 @app.get("/download-pdf/")
-async def download_pdf(pdf_id: str):
+async def download_pdf(pdf_id: str, token: str = Depends(oauth2_scheme)):
     """
-    Download a PDF file from the database by ID.
+    Download a PDF file if it belongs to the authenticated user.
     """
     try:
+        # Extract user_id from the token
+        user_id = get_user_id_from_token(token)
+        if not user_id:
+            return {"error": "Invalid or missing token"}
+
         # Fetch the PDF from the database
-        pdf = collection.find_one({"_id": ObjectId(pdf_id)})
+        pdf = collection.find_one({"_id": ObjectId(pdf_id), "user_id": user_id})
         if not pdf:
-            return {"error": "PDF not found"}
+            return {"error": "PDF not found or access denied"}
 
         # Stream the PDF content
         pdf_content = BytesIO(pdf["content"])
@@ -353,15 +355,20 @@ async def download_pdf(pdf_id: str):
     except Exception as e:
         return {"error": str(e)}
 
-# HTML form for deleting PDFs
+#delete pdf html
 @app.get("/delete-form/", response_class=HTMLResponse)
-def delete_form():
+def delete_form(token: str = Depends(oauth2_scheme)):
     """
     Serve an HTML form with a dropdown menu to select a PDF for deletion.
     """
     try:
-        # Fetch all PDFs from the database
-        pdfs = collection.find({}, {"_id": 1, "name": 1})  # Only fetch `_id` and `name`
+        # Extract user_id from the token
+        user_id = get_user_id_from_token(token)
+        if not user_id:
+            return f"<h1>Error: Invalid or missing token</h1>"
+
+        # Fetch PDFs belonging to the authenticated user
+        pdfs = collection.find({"user_id": user_id}, {"_id": 1, "name": 1})  # Only fetch `_id` and `name`
         options = ""
         for pdf in pdfs:
             options += f'<option value="{str(pdf["_id"])}">{pdf["name"]}</option>'
@@ -388,7 +395,7 @@ def delete_form():
     except Exception as e:
         return f"<h1>Error: {str(e)}</h1>"
 
-# Delete PDF route
+#delete pdf functionality
 @app.post("/delete-pdf/")
 async def delete_pdf(pdf_id: str = Form(...)):
     """
@@ -427,15 +434,20 @@ async def delete_pdf(pdf_id: str = Form(...)):
         </html>
         """
 
-# HTML form for viewing PDFs
+#view pdf html
 @app.get("/view-form/", response_class=HTMLResponse)
-def view_form():
+def view_form(token: str = Depends(oauth2_scheme)):
     """
     Serve an HTML form with a dropdown menu to select a PDF for viewing.
     """
     try:
-        # Fetch all PDFs from the database
-        pdfs = collection.find({}, {"_id": 1, "name": 1})  # Only fetch `_id` and `name`
+        # Extract user_id from the token
+        user_id = get_user_id_from_token(token)
+        if not user_id:
+            return f"<h1>Error: Invalid or missing token</h1>"
+
+        # Fetch PDFs belonging to the authenticated user
+        pdfs = collection.find({"user_id": user_id}, {"_id": 1, "name": 1})  # Only fetch `_id` and `name`
         options = ""
         for pdf in pdfs:
             options += f'<option value="{str(pdf["_id"])}">{pdf["name"]}</option>'
@@ -462,7 +474,7 @@ def view_form():
     except Exception as e:
         return f"<h1>Error: {str(e)}</h1>"
 
-# View PDF route
+#view pdf functionalit
 @app.get("/view-pdf/")
 async def view_pdf(pdf_id: str):
     """
@@ -485,4 +497,3 @@ async def view_pdf(pdf_id: str):
 if __name__ == '__main__':
     import uvicorn
     uvicorn.run(app, host="127.0.0.1", port=8000)
->>>>>>> PDFread
