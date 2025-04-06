@@ -12,50 +12,99 @@ genai.configure(api_key=GEMINI_API_KEY)
 
 def extract_text_from_pdf(pdf_file):
     """
-    Extract text from a PDF file. Accepts either a file path or a BytesIO object.
+    Extracts text from a PDF file.
+    :param pdf_file: A BytesIO object containing the PDF content.
+    :return: Extracted text as a string.
     """
     try:
-        if isinstance(pdf_file, (str, bytes, os.PathLike)):
-            # If it's a file path, open the file
-            with open(pdf_file, "rb") as f:
-                reader = PdfReader(f)
-        else:
-            # If it's a BytesIO object, use it directly
-            reader = PdfReader(pdf_file)
-
+        reader = PdfReader(pdf_file)
         text = ""
         for page in reader.pages:
             text += page.extract_text()
         return text
     except Exception as e:
+        print(f"Error extracting text: {e}")
         return ""
 
-def generate_flashcards(text):
+def generate_response(text, prompt):
     """Generates flashcards using Gemini Flash 1.5 model."""
     model = genai.GenerativeModel('gemini-1.5-flash-latest')
-    prompt = (
-        "Create a list of flashcards based on the following text. "
-        "Each flashcard should have a keyword, phrase, or question on one side, "
-        "and a definition or answer on the other side. Format the response as JSON, "
-        "with each flashcard being an object in a list, like this:\n\n"
-        "[{\"front\": \"What is X?\", \"back\": \"X is ...\"}, {\"front\": \"Keyword\", \"back\": \"Definition\"}]\n\n"
-        f"Text:\n{text}"
-    )
-    
+
     try:
-        response = model.generate_content(prompt)
+        response = model.generate_content(prompt+"\nText:\n"+text)
+        # Debug: Log the raw response from the Gemini API
+        print(f"Gemini API response: {response.text}")
         return response.text  # The response should be a JSON string
     except Exception as e:
         print(f"Error generating flashcards: {e}")
         return None
 
 def parse_flashcards(response_text):
-    """Parses the JSON response from the AI into a list of flashcards."""
+    """Parses the JSON response from the AI into a dictionary of flashcards."""
     try:
-        flashcards = json.loads(response_text)
-        return flashcards  # A list of dictionaries with "front" and "back" keys
+        if not response_text:
+            print("Error: Empty response text")
+            return {}
+
+        print(f"Raw response text before cleaning: {repr(response_text)}")  # Debug: Log the raw response
+
+        # Clean the response text by removing the ```json block
+        if response_text.startswith("```json"):
+            response_text = response_text[7:]  # Remove the leading ```json
+        if response_text.endswith("```\n"):
+            response_text = response_text[:-4]  # Remove the trailing ```
+
+        cleaned_response = response_text.strip()  # Remove any extra whitespace or newlines
+        print(f"Cleaned response text: {repr(cleaned_response)}")  # Debug: Log the cleaned response
+
+        # Parse the JSON response
+        flashcards_list = json.loads(cleaned_response)
+
+        # Convert the list of flashcards into a dictionary
+        flashcards_dict = {card["front"]: card["back"] for card in flashcards_list}
+
+        # Debug: Log the parsed flashcards dictionary
+        print(f"Parsed flashcards dictionary: {flashcards_dict}")
+
+        return flashcards_dict
     except json.JSONDecodeError as e:
         print(f"Error parsing flashcards: {e}")
+        print(f"Raw response text: {repr(response_text)}")  # Debug: Log the raw response
+        return {}
+    except KeyError as e:
+        print(f"Error: Missing expected keys in flashcards: {e}")
+        return {}
+    
+def parse_reviewquiz(response_text):
+    """Parses the JSON response from the AI into a list of review quiz questions."""
+    try:
+        if not response_text:
+            print("Error: Empty response text")
+            return []
+
+        # Clean the response text by removing the ```json block
+        if response_text.startswith("```json"):
+            response_text = response_text[7:]  # Remove the leading ```json
+        if response_text.endswith("```\n"):
+            response_text = response_text[:-4]  # Remove the trailing ```
+
+        cleaned_response = response_text.strip()  # Remove any extra whitespace or newlines
+        print(f"Cleaned response text: {repr(cleaned_response)}")  # Debug: Log the cleaned response
+
+        # Parse the JSON response
+        quiz_list = json.loads(cleaned_response)
+
+        # Validate the structure of each question
+        for question in quiz_list:
+            if not all(key in question for key in ["question", "choices", "correct"]):
+                raise KeyError(f"Missing keys in question: {question}")
+
+        return quiz_list
+    except json.JSONDecodeError as e:
+        print(f"Error parsing review quiz: {e}")
+        return []
+    except KeyError as e:
+        print(f"Error: Missing expected keys in review quiz: {e}")
         return []
 
 def save_summary_to_file(summary, output_file="summary.txt"):
