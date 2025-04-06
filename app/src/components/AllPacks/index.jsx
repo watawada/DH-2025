@@ -12,31 +12,31 @@ const AllPacks = () => {
       <div className="card-container">
         <div
           className="card"
-          onClick={() => handleCardClick("Pack 1")} // Make the card clickable
+          onClick={() => handleCardClick("Chemistry")} // Make the card clickable
         >
-          <h3>Pack 1</h3>
-          <p>Description of Pack 1</p>
+          <h3>Chemistry</h3>
+          <p>Experiments🧪</p>
         </div>
         <div
           className="card"
-          onClick={() => handleCardClick("Pack 2")} // Make the card clickable
+          onClick={() => handleCardClick("Computer Science")} // Make the card clickable
         >
-          <h3>Pack 2</h3>
-          <p>Description of Pack 2</p>
+          <h3>Computer Science</h3>
+          <p>Machining💻</p>
         </div>
         <div
           className="card"
-          onClick={() => handleCardClick("Pack 3")} // Make the card clickable
+          onClick={() => handleCardClick("Art")} // Make the card clickable
         >
-          <h3>Pack 3</h3>
-          <p>Description of Pack 3</p>
+          <h3>Art</h3>
+          <p>Creativity🖌️</p>
         </div>
         <div
           className="card"
-          onClick={() => handleCardClick("Pack 4")} // Make the card clickable
+          onClick={() => handleCardClick("😊")} // Make the card clickable
         >
-          <h3>Pack 4</h3>
-          <p>Description of Pack 4</p>
+          <h3>😊</h3>
+          <p>😒😍😁👍</p>
         </div>
       </div>
     </div>
