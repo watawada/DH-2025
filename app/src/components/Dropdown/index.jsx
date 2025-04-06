@@ -1,8 +1,20 @@
 import React, { useState } from 'react';
-import './index.css';
+import { Link } from 'react-router-dom'; 
 // import Dashboard from '../../Dashboard.jsx';
-// import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom';
+// import App from '../../App.jsx';
 
+
+// goDashboard(document.getElementById('root')).render(
+//   <StrictMode>
+//     <Dashboard/>
+//   </StrictMode>,
+// )
+
+// goHome(document.getElementById('root')).render(
+//   <StrictMode>
+//     <App/>
+//   </StrictMode>,
+// )
 
 const Dropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,6 +22,12 @@ const Dropdown = () => {
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
+
+  // <Routes>
+  
+  //   <Route path="/dashboard" element={<Dashboard />} />
+  //   {/* <Route path="/contact" element={<Contact />} /> */}
+  // </Routes>
 
   return (
     <div className="dropdown">
@@ -22,11 +40,10 @@ const Dropdown = () => {
           &times;
         </button>
         <ul>
-          <li><a href="/#home">Home</a></li>
-          <li><a href="/#about">About</a></li>
-          {/* <li><Link to="/Dashboard.jsx">dashboard</Link></li> */}
-          <li><a href="/#services">Services</a></li>
-          <li><a href="/#contact">Contact</a></li>
+          {/* <li><a onClick={goHome()}>Home</a></li>
+          <li><a onClick={goDashboard()}>Dashboard</a></li> */}
+          <li><Link to="/">Home</Link></li>    {/* Link to Home */}
+          <li><Link to="/dashboard">Dashboard</Link></li>  {/* Link to About */}
         </ul>
       </div>
     </div>
