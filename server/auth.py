@@ -1,10 +1,9 @@
-# auth.py - Updated version
+
 import json
 from os import environ as env
-from authlib.integrations.starlette_client import OAuth, OAuthError
+from authlib.integrations.starlette_client import OAuth
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from starlette.requests import Request
 from jose import jwt
 import requests
 

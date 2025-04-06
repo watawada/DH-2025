@@ -17,7 +17,7 @@ def get_db():
 
 # Test MongoDB connection
 try:
-    client.server_info()  # Force connection on a request as a test
+    client.server_info()  #Trigger an exception if unable to connect
     print("Connected to MongoDB Atlas successfully!")
 except Exception as e:
     print(f"Error connecting to MongoDB: {e}")

@@ -5,7 +5,6 @@ const AccountSettingsButton = () => {
     const handleButtonClick = () => {
         // Logic to handle account settings button click
         console.log('Account Settings clicked!');
-        // You can add navigation logic here if needed, e.g., using React Router
     };
 
     return (
@@ -16,7 +15,6 @@ const AccountSettingsButton = () => {
 };
 
 const UserProfile = ({ profilePicture, name, username }) => {
-    console.log("UserProfile props:", { profilePicture, name, username }); // Debug: Log the props
     return (
       <div className="user-profile-container">
         <img src={profilePicture} alt={`${name}'s profile`} className="profile-image" />

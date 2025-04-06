@@ -23,7 +23,6 @@ function FlashcardsPage() {
           },
         }); // Call the backend route to generate flashcards
 
-        console.log("Flashcards fetched:", response.data.flashcards); // Debugging log
         setFlashcards(response.data.flashcards || []); // Set flashcards or empty array
       } catch (err) {
         console.error("Error fetching flashcards:", err);

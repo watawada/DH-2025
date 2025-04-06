@@ -19,7 +19,6 @@ function Dashboard() {
     const fetchUserData = async () => {
       try {
         const response = await connection.get("/user/self");
-        console.log("User data fetched:", response.data); // Debug: Log the response
         setUser(response.data); // Set user data if session is valid
       } catch (err) {
         console.error("Error fetching user data:", err);

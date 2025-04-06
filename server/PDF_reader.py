@@ -1,11 +1,10 @@
-import PyPDF2
 import google.generativeai as genai
 from dotenv import load_dotenv
 from PyPDF2 import PdfReader
 import os
 import json
 
-# Set up API key (replace with your actual API key)
+# Set up API key
 load_dotenv()
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 genai.configure(api_key=GEMINI_API_KEY)
@@ -32,8 +31,6 @@ def generate_response(text, prompt):
 
     try:
         response = model.generate_content(prompt+"\nText:\n"+text)
-        # Debug: Log the raw response from the Gemini API
-        print(f"Gemini API response: {response.text}")
         return response.text  # The response should be a JSON string
     except Exception as e:
         print(f"Error generating flashcards: {e}")
@@ -46,8 +43,6 @@ def parse_flashcards(response_text):
             print("Error: Empty response text")
             return []
 
-        print(f"Raw response text before cleaning: {repr(response_text)}")  # Debug: Log the raw response
-
         # Clean the response text by removing the ```json block
         if response_text.startswith("```json"):
             response_text = response_text[7:]  # Remove the leading ```json
@@ -55,7 +50,6 @@ def parse_flashcards(response_text):
             response_text = response_text[:-4]  # Remove the trailing ```
 
         cleaned_response = response_text.strip()  # Remove any extra whitespace or newlines
-        print(f"Cleaned response text: {repr(cleaned_response)}")  # Debug: Log the cleaned response
 
         # Parse the JSON response
         flashcards_list = json.loads(cleaned_response)
@@ -63,13 +57,9 @@ def parse_flashcards(response_text):
         # Ensure the response is a list of objects with "front" and "back" keys
         validated_flashcards = [{"front": card["front"], "back": card["back"]} for card in flashcards_list]
 
-        # Debug: Log the parsed flashcards list
-        print(f"Parsed flashcards list: {validated_flashcards}")
-
         return validated_flashcards
     except json.JSONDecodeError as e:
         print(f"Error parsing flashcards: {e}")
-        print(f"Raw response text: {repr(response_text)}")  # Debug: Log the raw response
         return []
     except KeyError as e:
         print(f"Error: Missing expected keys in flashcards: {e}")

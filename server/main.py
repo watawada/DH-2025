@@ -1,4 +1,3 @@
-# main.py - Updated version
 from fastapi import FastAPI
 from routes.upload import router as upload_router
 from routes.search import router as search_router
@@ -8,7 +7,6 @@ from routes.delete import router as delete_router
 from routes.view import router as view_router
 from routes.reviewquiz import router as reviewquiz_router
 from routes.userRoute import router as user_router
-import logging
 from fastapi.middleware.cors import CORSMiddleware
 from routes.authRoutes import router
 from starlette.middleware.sessions import SessionMiddleware
@@ -30,7 +28,7 @@ app.include_router(user_router, prefix="/user", tags=["user"])
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Restrict this in production
+    allow_origins=["*"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

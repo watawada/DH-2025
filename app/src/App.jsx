@@ -18,7 +18,7 @@ const App = () => {
             <Route path="/upload" element={<UploadForm />} />
             <Route path="/start-learning" element={<StartLearning />} />
             <Route path="/flashcards" element={<FlashcardsPage />} />
-            <Route path="/quiz" element={<QuizPage />} /> {/* Add this route */}
+            <Route path="/quiz" element={<QuizPage />} /> {}
           </Routes>
         </main>
       </div>

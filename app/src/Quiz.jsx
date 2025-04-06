@@ -29,17 +29,10 @@ function QuizPage() {
       const userAnswer = selectedOption.value; // User's selected answer
       const correctAnswer = q.correct; // Correct answer from the quiz data
   
-      // Debugging: Log the selected answer, correct answer, and their types
-      console.log(`Question ${index + 1}:`);
-      console.log(`Selected Answer: ${userAnswer} (Type: ${typeof userAnswer})`);
-      console.log(`Correct Answer: ${correctAnswer} (Type: ${typeof correctAnswer})`);
-  
       // Normalize both answers for comparison
       const isCorrect =
         String(userAnswer).trim().toLowerCase() ===
         String(correctAnswer).trim().toLowerCase();
-  
-      console.log(`Is Correct: ${isCorrect}`); // Debugging: Log the comparison result
   
       return {
         correct: isCorrect,

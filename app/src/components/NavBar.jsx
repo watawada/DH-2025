@@ -1,9 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import connection from "../backend"; // Axios instance
 
 function NavBar() {
-  const navigate = useNavigate();
 
   const handleLogin = async () => {
     try {
