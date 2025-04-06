@@ -1,0 +1,24 @@
+.horizontal-card {
+  display: flex;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px; /* Add spacing between cards */
+}
+
+.definition {
+  flex: 1; /* 1/3 of the space */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f8f9fa;
+  border-right: 2px solid #dee2e6; /* Add a right border */
+}
+
+.term {
+  flex: 2; /* 2/3 of the space */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #ffffff;
+}
