@@ -4,7 +4,6 @@ import React from "react";
 import NavBar from "./components/NavBar.jsx";
 import HeroSection from "./components/Hero.jsx";
 import Section from "./components/Section";
-import Dropdown from "./components/Dropdown";
 
 function App() {
   const aboutCards = [

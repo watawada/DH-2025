@@ -1,16 +1,18 @@
 import logo from "../assets/logo.svg";
+import Dropdown from "./Dropdown";
 
 function NavBar() {
   return (
     <nav className="navbar navbar-expand-lg bg-dark navbar-dark">
       <div className="container-fluid">
+        <Dropdown />
         <a className="navbar-brand d-flex align-items-center" href="#">
           <img
             src={logo}
             alt="Brand Logo"
             width="30"
             height="30"
-            className="me-2"
+            className="me-2" // Increased margin class
           />
           <span>Brand Name</span>
         </a>
