@@ -24,6 +24,10 @@ app.add_middleware(
     same_site="lax"
 )
 
+@app.get("/")
+def root():
+    return {"message": "THIS IS THE HOME PAGE"}
+
 app.include_router(router, prefix="/auth", tags=["auth"])
 
 if __name__ == '__main__':
