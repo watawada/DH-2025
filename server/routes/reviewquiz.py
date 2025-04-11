@@ -5,8 +5,6 @@ from fastapi.responses import HTMLResponse
 from io import BytesIO
 from PDF_reader import extract_text_from_pdf, generate_response, parse_reviewquiz
 from database import get_db
-from PyPDF2 import PdfReader
-import json
 from fastapi import Request
 
 router = APIRouter()

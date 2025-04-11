@@ -5,7 +5,6 @@ from fastapi.responses import HTMLResponse
 from io import BytesIO
 from PDF_reader import extract_text_from_pdf, generate_response, parse_flashcards
 from database import get_db
-from PyPDF2 import PdfReader
 
 router = APIRouter()
 
@@ -45,7 +44,7 @@ async def generate_flashcards_route(pdf_id: str = Form(...), db: Database = Depe
         if not flashcards:
             return {"error": "No flashcards generated"}
 
-        return {"flashcards": flashcards}  # Return the generated flashcards
+        return {"flashcards": flashcards}  
     except Exception as e:
         return {"error": str(e)}
 

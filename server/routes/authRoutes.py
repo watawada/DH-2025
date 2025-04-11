@@ -3,9 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Response
 from auth import oauth
 from starlette.requests import Request
 from starlette.responses import RedirectResponse, JSONResponse
-from authlib.integrations.base_client import OAuthError
-from os import environ as env
-from auth import DOMAIN, CLIENT_ID, CLIENT_SECRET
+from auth import DOMAIN, CLIENT_ID
 from database import get_db
 from pymongo.errors import DuplicateKeyError  # Import for handling unique constraints
 
@@ -69,8 +67,9 @@ async def callback(request: Request, db=Depends(get_db)):
         request.session["access_token"] = token["access_token"]
         request.session["id_token"] = token["id_token"]
         request.session["user_email"] = user_info["email"]
-        # Redirect to a protected route or homepage
-        return RedirectResponse(url="/")
+        
+        # Redirect to the frontend's "Upload PDF" page
+        return RedirectResponse(url="http://localhost:8001/upload")
     except Exception as e:
         # Log the error
         print(f"Error during callback: {str(e)}")
@@ -81,10 +80,8 @@ async def callback(request: Request, db=Depends(get_db)):
 
 @router.get("/logout")
 async def logout(request: Request, response: Response):
-    # Clear session
     request.session.clear()
     
-    # Redirect to Auth0 logout endpoint
     return_to = request.url_for("home")
 
     print(f"Logout returnTo URL: {return_to}")  # DEBUG: Log the returnTo URL

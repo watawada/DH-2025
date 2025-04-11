@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Form, File, UploadFile, Depends
 from starlette.requests import Request
-from bson.objectid import ObjectId
 from fastapi.responses import HTMLResponse
 from pymongo.database import Database
 from database import get_db
@@ -38,7 +37,7 @@ async def upload_pdf(
         # Update the current user's "files" array in the "users" collection
         user_collection = db["users"]
         user_collection.update_one(
-            {"email": user_email},  # Find the user by email
+            {"email": user_email},  
             {"$push": {"files": pdf_id}}  # Add the PDF's ObjectId to the "files" array
         )
         
