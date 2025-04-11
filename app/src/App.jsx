@@ -10,7 +10,7 @@ import QuizPage from "./Quiz.jsx"; // Import the QuizPage
 const App = () => {
   return (
     <Router>
-      <div>
+      <div className="min-vh-100 d-flex flex-column bg-gradient">
         <main>
           <Routes>
             <Route path="/" element={<Home />} />
